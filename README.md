@@ -1,10 +1,10 @@
-# Mwsu-2D-Gaming-SchumacherScott Schumacher
+# Mwsu-2D-Gaming-Schumacher
+
+Scott Schumacher
+
+
 
 scottmachershoe@yahoo.com
 
-img
-
-    Status API Training Shop Blog About 
-
-    © 2016 GitHub, Inc. Terms Privacy Security Contact Help 
+![img](https://avatars1.githubusercontent.com/u/16801088?v=3&s=460)
 
