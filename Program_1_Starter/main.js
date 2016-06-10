@@ -28,23 +28,31 @@ var mainState = {
 
         this.scoreLabel = game.add.text(30, 30, 'score: 0', { font: '18px Arial', fill: '#ffffff' });
         this.score = 0;
+        
+        this.deathLabel = game.add.text(325, 300, 'political deaths: 0', { font: '18px Arial', fill: '#ffffff' } );
+        this.death = 0;
+        
+        this.timer = game.add.text(355, 30, 'time left: 120', { font: '18px Arial', fill: '#ffffff' } );
+        this.time = 120;
 
         this.enemies = game.add.group();
         this.enemies.enableBody = true;
         this.enemies.createMultiple(10, 'enemy');
         game.time.events.loop(2200, this.addEnemy, this);
+        
+        game.time.events.loop(1000, this.countdown, this); //runs the countdown at once per second-shoe
     },
 
     update: function() {
         game.physics.arcade.collide(this.player, this.walls);
         game.physics.arcade.collide(this.enemies, this.walls);
         game.physics.arcade.overlap(this.player, this.coin, this.takeCoin, null, this);
-        game.physics.arcade.overlap(this.player, this.enemies, this.playerDie, null, this);
+        game.physics.arcade.overlap(this.player, this.enemies, this.loseVote, null, this);
 
         this.movePlayer(); 
 
         if (!this.player.inWorld) {
-            this.playerDie();
+            this.updatePlayerPosition();
         }
     },
 
@@ -70,7 +78,25 @@ var mainState = {
 
         this.updateCoinPosition();
     },
-
+    
+    loseVote: function(player, enemy){
+        this.death += 1/3;
+        this.deathLabel.text = 'political deaths:' + this.death;
+    },
+    
+  
+    //countdown frequency regulated by loop at line 43-shoe
+    countdown: function(){
+        this.time -=1;
+        
+        if(this.time <= 0){
+            game.state.start('main'); //if time expires, start new game-shoe
+        }
+        
+        this.timer.text = 'time left:' + this.time;
+    },
+    
+    
     updateCoinPosition: function() {
         var coinPosition = [
             {x: 140, y: 60}, {x: 360, y: 60}, 
@@ -86,6 +112,24 @@ var mainState = {
 
         var newPosition = game.rnd.pick(coinPosition);
         this.coin.reset(newPosition.x, newPosition.y);
+    },
+    
+    
+    updatePlayerPosition: function() {
+        var playerPosition = [
+            {x: 125, y: 50}, {x: 220, y: 55}, {x: 305, y: 45},
+            {x: 440, y: 40}, {x: 50, y: 40}, {x: 435, y: 70}, 
+            {x: 100, y: 150}, {x: 250, y:10}, {x: 215, y: 270}
+        ];
+
+        for (var i = 0; i < playerPosition.length; i++) {
+            if (playerPosition[i].x == this.coin.x) {
+                playerPosition.splice(i, 1);
+            }
+        }
+
+        var newSpot = game.rnd.pick(playerPosition);
+        this.player.reset(newSpot.x, newSpot.y);
     },
 
     addEnemy: function() {
@@ -124,9 +168,9 @@ var mainState = {
         this.walls.setAll('body.immovable', true);
     },
 
-    playerDie: function() {
+    /*playerDie: function() {
         game.state.start('main');
-    },
+    },*/
 };
 
 var game = new Phaser.Game(500, 340, Phaser.AUTO, 'gameDiv');
