@@ -1,11 +1,12 @@
 var mainState = {
 
     preload: function() {
-        game.load.image('player', 'assets/hill3.png');
+        window.count=0; // Declaring a Variable Counter
+        game.load.image('player', 'assets/hill3.png'); //hillary clinton
         game.load.image('wallV', 'assets/wallVertical.png');
         game.load.image('wallH', 'assets/wallHorizontal.png');
         game.load.image('coin', 'assets/seal.png');
-        game.load.image('enemy', 'assets/bernie.png');
+        game.load.image('enemy', 'assets/bernie.png'); //bernie sanders, arch nemesis of hillary
     },
 
     create: function() { 
@@ -18,7 +19,7 @@ var mainState = {
         this.player = game.add.sprite(game.width/2, game.height/2, 'player');
         this.player.anchor.setTo(0.5, 0.5);
         game.physics.arcade.enable(this.player);
-        this.player.body.gravity.y = 500;
+        this.player.body.gravity.y = 380;
 
         this.createWorld();
 
@@ -80,9 +81,14 @@ var mainState = {
     },
     
     loseVote: function(player, enemy){
-        this.death += 1/3;
+       
+        count += 1;
+        if ((count%4)==1) // making use the global counter as the deaths function is called four times for one collision
+		{
+		this.death += 1;
         this.deathLabel.text = 'political deaths:' + this.death;
-    },
+		}
+     },
     
   
     //countdown frequency regulated by loop at line 43-shoe
@@ -141,7 +147,7 @@ var mainState = {
 
         enemy.anchor.setTo(0.5, 1);
         enemy.reset(game.width/2, 0);
-        enemy.body.gravity.y = 500;
+        enemy.body.gravity.y = 380;
         enemy.body.velocity.x = 100 * game.rnd.pick([-1, 1]);
         enemy.body.bounce.x = 1;
         enemy.checkWorldBounds = true;
