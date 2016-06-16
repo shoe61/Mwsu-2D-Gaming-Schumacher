@@ -18,9 +18,9 @@ var loadState = {
         game.load.image('tileset', 'assets/tileset.png');
         game.load.tilemap('map', 'assets/map.json', null, Phaser.Tilemap.TILED_JSON);
         
-        game.load.image('jumpButton', 'assets/jumpButton.png');
-        game.load.image('rightButton', 'assets/rightButton.png');
-        game.load.image('leftButton', 'assets/leftButton.png');
+        game.load.image('jumpButton', 'assets/jarrow.png');
+        game.load.image('rightButton', 'assets/rarrow.png');
+        game.load.image('leftButton', 'assets/larrow.png');
 
         
         game.load.image('background', 'assets/background.png'); 
