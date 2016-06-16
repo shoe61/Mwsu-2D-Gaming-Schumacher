@@ -147,7 +147,7 @@ var playState = {
         this.moveRight = false;
 
         // Add the move left button
-        var leftButton = game.add.sprite(50, 240, 'leftButton');
+        var leftButton = game.add.sprite(-20, 240, 'leftButton');
         leftButton.inputEnabled = true;
         leftButton.alpha = 0.5;
         leftButton.events.onInputOver.add(this.setLeftTrue, this);
