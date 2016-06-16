@@ -28,7 +28,7 @@ var menuState = {
             text = 'touch the screen to start';
         }
         // Display the text variable
-        var startLabel = game.add.text(game.width/2, game.height-80, 'press the up arrow key to start', { font: '25px Arial', fill: '#ffffff' });
+        var startLabel = game.add.text(game.width/2, game.height-80, text, { font: '25px Arial', fill: '#ffffff' });
         startLabel.anchor.setTo(0.5, 0.5);
         game.add.tween(startLabel).to({angle: -2}, 500).to({angle: 2}, 1000).to({angle: 0}, 500).loop().start(); 
 
