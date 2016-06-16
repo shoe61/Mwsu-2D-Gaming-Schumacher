@@ -2,11 +2,21 @@ var playState = {
 
     create: function() { 
         this.cursor = game.input.keyboard.createCursorKeys();
+        game.input.keyboard.addKeyCapture([Phaser.Keyboard.UP, Phaser.Keyboard.DOWN, Phaser.Keyboard.LEFT, Phaser.Keyboard.RIGHT]);
+        this.wasd = {
+            up: game.input.keyboard.addKey(Phaser.Keyboard.W),
+            left: game.input.keyboard.addKey(Phaser.Keyboard.A),
+            right: game.input.keyboard.addKey(Phaser.Keyboard.D)
+        };
         
+        
+
         this.player = game.add.sprite(game.width/2, game.height/2, 'player');
         this.player.anchor.setTo(0.5, 0.5);
         game.physics.arcade.enable(this.player);
         this.player.body.gravity.y = 500;
+        this.player.animations.add('right', [1, 2], 8, true);
+        this.player.animations.add('left', [3, 4], 8, true);
 
         this.createWorld();
 
@@ -21,131 +31,102 @@ var playState = {
         this.enemies = game.add.group();
         this.enemies.enableBody = true;
         this.enemies.createMultiple(10, 'enemy');
-        game.time.events.loop(2200, this.addEnemy, this);
-        
+        this.nextEnemy = 0;
+
         this.jumpSound = game.add.audio('jump');
         this.coinSound = game.add.audio('coin');
-        this.deadSound = game.add.audio('dead');
-        
-        // Add and start the music in the 'create' function of the play.js file
-        // Because we want to play the music when the play state starts
-        this.music = game.add.audio('music'); // Add the music
-        this.music.loop = true; // Make it loop
-        
-                  
-        
-        // Change the volume of the sound (0 = mute, 1 = full sound)
-        this.music.volume = 1.0;
-        
-        // Increase the volume from 0 to 1 over the duration specified
-        this.music.fadeIn(1000);
-        
-        // Decrease the volume from 1 to 0 over the duration specified
-        this.music.fadeOut(1000);
-               
-        this.music.play(); // Start the music
-        
-        // Create the 'right' animation by looping the frames 1 and 2
-        this.player.animations.add('right', [1, 2], 8, true);
-        // Create the 'left' animation by looping the frames 3 and 4
-        this.player.animations.add('left', [3, 4], 8, true);
-        
-        // Create the emitter with 15 particles. We don't need to set the x y
-        // Since we don't know where to do the explosion yet
-        this.emitter = game.add.emitter(0, 0, 15);
-        
-        // Set the 'pixel' image for the particles
-        this.emitter.makeParticles('pixel');
+        this.deadSound = game.add.audio('dead'); 
 
-        // Set the x and y speed of the particles between -150 and 150
-        // Speed will be randomly picked between -150 and 150 for each particle
+        this.emitter = game.add.emitter(0, 0, 15);
+        this.emitter.makeParticles('pixel');
         this.emitter.setYSpeed(-150, 150);
         this.emitter.setXSpeed(-150, 150);
-
-        // Scale the particles from 2 time their size to 0 in 800ms
-        // Parameters are: startX, endX, startY, endY, duration
         this.emitter.setScale(2, 0, 2, 0, 800);
-
-        // Use no gravity
         this.emitter.gravity = 0;
     },
 
     update: function() {
-        game.physics.arcade.collide(this.player, this.walls);
-        game.physics.arcade.collide(this.enemies, this.walls);
+        // replacing walls with tilemap layer
+        //game.physics.arcade.collide(this.player, this.walls);
+        //game.physics.arcade.collide(this.enemies, this.walls);
+        // Replaced 'this.walls' by 'this.layer'
+        game.physics.arcade.collide(this.player, this.layer);
+        game.physics.arcade.collide(this.enemies, this.layer);
+        
         game.physics.arcade.overlap(this.player, this.coin, this.takeCoin, null, this);
         game.physics.arcade.overlap(this.player, this.enemies, this.playerDie, null, this);
 
-        this.movePlayer(); 
-        
-        // If the player is dead, do nothing
         if (!this.player.alive) {
             return;
         }
+        
+        this.movePlayer(); 
 
         if (!this.player.inWorld) {
-            
-            // Shake for 300ms with an intensity of 0.02
-            game.camera.shake(0.02, 300);
-            
             this.playerDie();
         }
-    },
 
-    
-    /**
-    * Find the distance between two display objects (like Sprites).
-    *
-    * @method Phaser.Physics.Arcade#distanceBetween
-    * @param {any} source - The Display Object to test from.
-    * @param {any} target - The Display Object to test to.
-    * @return {number} The distance between the source and target objects.
-    */
-    distanceBetween: function (player, enemy) {
-
-        var dx = player.x - enemy.x;
-        var dy = player.y - enemy.y;
-
-        return Math.sqrt(dx * dx + dy * dy);
-
-    },
-
-    
-    
-    movePlayer: function() {
-        if (this.cursor.left.isDown) {
-            this.player.body.velocity.x = -200;
-            this.player.animations.play('left'); // Left animation
+        if (this.nextEnemy < game.time.now) {
+            var start = 4000, end = 1000, score = 100;
+            var delay = Math.max(start - (start - end) * game.global.score / score, end);
+            
+            this.addEnemy();
+            this.nextEnemy = game.time.now + delay;
         }
-        else if (this.cursor.right.isDown) {
+    },
+
+    movePlayer: function() {
+        if (this.cursor.left.isDown || this.wasd.left.isDown) {
+            this.player.body.velocity.x = -200;
+            this.player.animations.play('left');
+        }
+        else if (this.cursor.right.isDown || this.wasd.right.isDown) {
             this.player.body.velocity.x = 200;
-            this.player.animations.play('right'); // right animation
+            this.player.animations.play('right');
         }
         else {
             this.player.body.velocity.x = 0;
-            this.player.animations.stop(); // Stop animations
-            this.player.frame = 0; // Change frame (stand still)
+            this.player.animations.stop(); 
+            this.player.frame = 0; 
         }
-
-        if (this.cursor.up.isDown && this.player.body.touching.down) {
-            this.player.body.velocity.y = -320;
-            // Add this inside the 'movePlayer' function, in the 'if(player jumps)'
+        
+        /* This is replaced by the same code but body.onFloor
+        replaces body.touching.down
+        if ((this.cursor.up.isDown || this.wasd.up.isDown) && this.player.body.touching.down) */
+        
+        if ((this.cursor.up.isDown || this.wasd.up.isDown) && this.player.body.onFloor()){
             this.jumpSound.play();
-        }      
+            this.player.body.velocity.y = -320;
+        }
+    },
+    
+    addMobileInputs: function() {
+        // Add the jump button
+        var jumpButton = game.add.sprite(350, 240, 'jumpButton');
+        jumpButton.inputEnabled = true;
+        jumpButton.alpha = 0.5;
+
+        // Add the move left button
+        var leftButton = game.add.sprite(50, 240, 'leftButton');
+        leftButton.inputEnabled = true;
+        leftButton.alpha = 0.5;
+
+        // Add the move right button
+        var rightButton = game.add.sprite(130, 240, 'rightButton');
+        rightButton.inputEnabled = true;
+        rightButton.alpha = 0.5;
     },
 
     takeCoin: function(player, coin) {
         game.global.score += 5;
         this.scoreLabel.text = 'score: ' + game.global.score;
-        // Put this in the 'takeCoin' function
-        this.coinSound.play();
-        this.updateCoinPosition();
-        // Scale the coin to 0 to make it invisible
-        this.coin.scale.setTo(0, 0);
-        // Grow the coin back to its original scale in 500ms
-        game.add.tween(this.coin.scale).to({x: 1, y: 1}, 500).start();
-        game.add.tween(this.player.scale).to({x: 1.3, y: 1.3}, 100).yoyo(true).start();
         
+        this.updateCoinPosition();
+
+        this.coinSound.play();
+        this.coin.scale.setTo(0, 0);
+        game.add.tween(this.coin.scale).to({x: 1, y: 1}, 300).start();
+        game.add.tween(this.player.scale).to({x: 1.3, y: 1.3}, 100).yoyo(true).start();
     },
 
     updateCoinPosition: function() {
@@ -181,43 +162,35 @@ var playState = {
         enemy.outOfBoundsKill = true;
     },
 
-    createWorld: function() {
-        this.walls = game.add.group();
-        this.walls.enableBody = true;
+   createWorld: function() {
+    // Create the tilemap
+    this.map = game.add.tilemap('map');
 
-        game.add.sprite(0, 0, 'wallV', 0, this.walls); 
-        game.add.sprite(480, 0, 'wallV', 0, this.walls); 
-        game.add.sprite(0, 0, 'wallH', 0, this.walls); 
-        game.add.sprite(300, 0, 'wallH', 0, this.walls);
-        game.add.sprite(0, 320, 'wallH', 0, this.walls); 
-        game.add.sprite(300, 320, 'wallH', 0, this.walls); 
-        game.add.sprite(-100, 160, 'wallH', 0, this.walls); 
-        game.add.sprite(400, 160, 'wallH', 0, this.walls); 
-        var middleTop = game.add.sprite(100, 80, 'wallH', 0, this.walls);
-        middleTop.scale.setTo(1.5, 1);
-        var middleBottom = game.add.sprite(100, 240, 'wallH', 0, this.walls);
-        middleBottom.scale.setTo(1.5, 1);
+    // Add the tileset to the map
+    this.map.addTilesetImage('tileset');
 
-        this.walls.setAll('body.immovable', true);
-    },
+    // Create the layer by specifying the name of the Tiled layer
+    this.layer = this.map.createLayer('Tile Layer 1');
+
+    // Set the world size to match the size of the layer
+    this.layer.resizeWorld();
+
+    // Enable collisions for the first tilset element (the blue wall)
+    this.map.setCollision(1);
+   },
 
     playerDie: function() {
-    // Kill the player to make it disappear from the screen
-    this.player.kill();
-    // Start the sound and the particles
-    this.deadSound.play();
-    this.emitter.x = this.player.x;
-    this.emitter.y = this.player.y;
-    this.emitter.start(true, 800, null, 15);
-    // Flash the color white for 900ms
-    //game.camera.flash(0xffffff, 900);
-    game.camera.flash(0x00ffff, 900);
-
-    // Call the 'startMenu' function in 1000ms
-    game.time.events.add(1000, this.startMenu, this);
+        this.player.kill();
+        
+        this.deadSound.play();
+        this.emitter.x = this.player.x;
+        this.emitter.y = this.player.y;
+        this.emitter.start(true, 800, null, 15);
+        game.time.events.add(1000, this.startMenu, this);
+        game.camera.shake(0.02, 300);
     },
-    
+
     startMenu: function() {
-    game.state.start('menu');
+        game.state.start('menu');
     },
 };
