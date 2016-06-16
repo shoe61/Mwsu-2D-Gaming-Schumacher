@@ -161,7 +161,7 @@ var playState = {
 
 
         // Add the move right button
-        var rightButton = game.add.sprite(200, 240, 'rightButton');
+        var rightButton = game.add.sprite(130, 240, 'rightButton');
         rightButton.inputEnabled = true;
         rightButton.alpha = 0.5;
         rightButton.events.onInputOver.add(this.setRightTrue, this);
