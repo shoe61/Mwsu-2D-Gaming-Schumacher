@@ -30,6 +30,12 @@ var loadState = {
         game.load.audio('jump', ['assets/jump.ogg', 'assets/jump.mp3']);
         game.load.audio('coin', ['assets/coin.ogg', 'assets/coin.mp3']);
         game.load.audio('dead', ['assets/dead.ogg', 'assets/dead.mp3']);
+        
+        // Load the music in 2 different formats in the load.js file
+        game.load.audio('music', ['assets/flight.ogg', 'assets/flight.mp3']);
+
+        
+        
     },
 
     create: function() { 
