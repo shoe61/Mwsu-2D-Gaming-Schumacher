@@ -140,7 +140,7 @@ var playState = {
     
     addMobileInputs: function() {
         // Add the jump button
-        var jumpButton = game.add.sprite(350, 240, 'jumpButton');
+        var jumpButton = game.add.sprite(350, 260, 'jumpButton');
         jumpButton.inputEnabled = true;
         jumpButton.alpha = 0.5;
         // Call 'jumpPlayer' when the 'jumpButton' is pressed
@@ -161,7 +161,7 @@ var playState = {
 
 
         // Add the move right button
-        var rightButton = game.add.sprite(200, 240, 'rightButton');
+        var rightButton = game.add.sprite(200, 260, 'rightButton');
         rightButton.inputEnabled = true;
         rightButton.alpha = 0.5;
         rightButton.events.onInputOver.add(this.setRightTrue, this);
