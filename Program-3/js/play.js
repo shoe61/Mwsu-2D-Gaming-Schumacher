@@ -26,7 +26,11 @@ var playState = {
             right: game.input.keyboard.addKey(Phaser.Keyboard.D)
         };
         
-        
+        // Add and start the music in the 'create' function of the play.js file
+        // Because we want to play the music when the play state starts
+        this.music = game.add.audio('music'); // Add the music
+        this.music.loop = true; // Make it loop
+        this.music.play(); // Start the music
 
         this.player = game.add.sprite(game.width/2, game.height/2, 'player');
         this.player.anchor.setTo(0.5, 0.5);
@@ -278,6 +282,9 @@ var playState = {
         this.emitter.start(true, 800, null, 15);
         game.time.events.add(1000, this.startMenu, this);
         game.camera.shake(0.02, 300);
+        // And don't forget to stop the music in the 'playerDie' function
+        // Otherwise the music would keep playing
+        this.music.stop();
     },
 
     startMenu: function() {
