@@ -1,5 +1,14 @@
 var SpaceHipster = SpaceHipster || {};
 
+// Declare difficulty variable
+var skillLevel;
+// Define skilllevel parameters;
+var Easy = 2550;
+var Medium = 50150;
+var Hard = 150250;
+// The ratio of large asteroids (0-100)
+var asteroidSize
+
 //title screen
 SpaceHipster.Game = function(){};
 
@@ -42,7 +51,7 @@ SpaceHipster.Game.prototype = {
   },
   update: function() {
     if(this.game.input.activePointer.justPressed()) {
-      
+
       //move on the direction of the input
       this.game.physics.arcade.moveToPointer(this.player, this.playerSpeed);
     }
@@ -74,7 +83,7 @@ SpaceHipster.Game.prototype = {
   },
   generateAsteriods: function() {
     this.asteroids = this.game.add.group();
-    
+
     //enable physics in them
     this.asteroids.enableBody = true;
 
@@ -94,6 +103,28 @@ SpaceHipster.Game.prototype = {
       asteriod.body.collideWorldBounds = true;
     }
   },
+
+    generateAsteriod: function() {
+        this.asteroids = this.game.add.group();
+
+      //enable physics in them
+        this.asteroids.enableBody = true;
+
+      //phaser's random number generator
+        var asteriod;
+
+      // MAKE THE ASTEROID
+      //add sprite
+      asteriod = this.asteroids.create(this.game.world.randomX, this.game.world.randomY, 'rock');
+      asteriod.scale.setTo(this.game.rnd.integerInRange(10, 40)/10);
+
+      //physics properties
+      asteriod.body.velocity.x = this.game.rnd.integerInRange(-20, 20);
+      asteriod.body.velocity.y = this.game.rnd.integerInRange(-20, 20);
+      asteriod.body.immovable = true;
+      asteriod.body.collideWorldBounds = true;
+      },
+
   hitAsteroid: function(player, asteroid) {
     //play explosion sound
     this.explosionSound.play();
@@ -109,8 +140,8 @@ SpaceHipster.Game.prototype = {
 
     this.game.time.events.add(800, this.gameOver, this);
   },
-  gameOver: function() {    
-    //pass it the score as a parameter 
+  gameOver: function() {
+    //pass it the score as a parameter
     this.game.state.start('MainMenu', true, false, this.playerScore);
   },
   collect: function(player, collectable) {
