@@ -19,7 +19,7 @@ SpaceHipster.Boot.prototype = {
 	this.scale.minHeight = 170;
 	this.scale.maxWidth = 2880;
 	this.scale.maxHeight = 1920;
-	
+
 	//have the game centered horizontally
 	this.scale.pageAlignHorizontally = true;
 
@@ -28,7 +28,7 @@ SpaceHipster.Boot.prototype = {
 
 	//physics system for movement
 	this.game.physics.startSystem(Phaser.Physics.ARCADE);
-    
+
     this.state.start('Preload');
   }
 };
