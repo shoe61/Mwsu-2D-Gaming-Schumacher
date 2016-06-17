@@ -16,6 +16,8 @@ SpaceHipster.Game.prototype = {
   create: function() {
   	//set world dimensions
     this.game.world.setBounds(0, 0, 1920, 1920);
+      
+    this.game.time.events.loop(2200, this.generateAsteroid, this);
 
     //background
     this.background = this.game.add.tileSprite(0, 0, this.game.world.width, this.game.world.height, 'space');
@@ -39,7 +41,7 @@ SpaceHipster.Game.prototype = {
 
     //generate game elements
     this.generateCollectables();
-    this.generateAsteriods();
+        
 
     //show score
     this.showLabels();
@@ -81,7 +83,7 @@ SpaceHipster.Game.prototype = {
     }
 
   },
-  generateAsteriods: function() {
+  /*generateasteroids: function() {
     this.asteroids = this.game.add.group();
 
     //enable physics in them
@@ -89,41 +91,42 @@ SpaceHipster.Game.prototype = {
 
     //phaser's random number generator
     var numAsteroids = this.game.rnd.integerInRange(150, 200)
-    var asteriod;
+    var asteroid;
 
     for (var i = 0; i < numAsteroids; i++) {
       //add sprite
-      asteriod = this.asteroids.create(this.game.world.randomX, this.game.world.randomY, 'rock');
-      asteriod.scale.setTo(this.game.rnd.integerInRange(10, 40)/10);
+      asteroid = this.asteroids.create(this.game.world.randomX, this.game.world.randomY, 'rock');
+      asteroid.scale.setTo(this.game.rnd.integerInRange(10, 40)/10);
 
       //physics properties
-      asteriod.body.velocity.x = this.game.rnd.integerInRange(-20, 20);
-      asteriod.body.velocity.y = this.game.rnd.integerInRange(-20, 20);
-      asteriod.body.immovable = true;
-      asteriod.body.collideWorldBounds = true;
+      asteroid.body.velocity.x = this.game.rnd.integerInRange(-20, 20);
+      asteroid.body.velocity.y = this.game.rnd.integerInRange(-20, 20);
+      asteroid.body.immovable = true;
+      asteroid.body.collideWorldBounds = true;
     }
-  },
+  },*/
 
-    generateAsteriod: function() {
+    generateAsteroid: function() {
         this.asteroids = this.game.add.group();
 
       //enable physics in them
         this.asteroids.enableBody = true;
+        //this.asteroids.physicsBodyType = Phaser.Physics.ARCADE;
 
       //phaser's random number generator
-        var asteriod;
+        var asteroid;
 
       // MAKE THE ASTEROID
       //add sprite
-      asteriod = this.asteroids.create(this.game.world.randomX, this.game.world.randomY, 'rock');
-      asteriod.scale.setTo(this.game.rnd.integerInRange(10, 40)/10);
+      asteroid = this.asteroids.create(this.game.world.randomX, this.game.world.randomY, 'rock');
+      asteroid.scale.setTo(this.game.rnd.integerInRange(10, 40)/10);
 
       //physics properties
-      asteriod.body.velocity.x = this.game.rnd.integerInRange(-20, 20);
-      asteriod.body.velocity.y = this.game.rnd.integerInRange(-20, 20);
-      asteriod.body.immovable = true;
-      asteriod.body.collideWorldBounds = true;
-      },
+      asteroid.body.velocity.x = this.game.rnd.integerInRange(-20, 20);
+      asteroid.body.velocity.y = this.game.rnd.integerInRange(-20, 20);
+      asteroid.body.immovable = true;
+      asteroid.body.collideWorldBounds = true;
+ },
 
   hitAsteroid: function(player, asteroid) {
     //play explosion sound
@@ -168,5 +171,5 @@ SpaceHipster.Game.prototype = {
 TODO
 
 -audio
--asteriod bounch
+-asteroid bounch
 */
