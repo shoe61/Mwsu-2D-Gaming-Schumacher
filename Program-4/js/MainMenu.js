@@ -13,7 +13,7 @@ SpaceHipster.MainMenu.prototype = {
   create: function() {
   	//show the space tile, repeated
     this.background = this.game.add.tileSprite(0, 0, this.game.width, this.game.height, 'space');
-    
+
     //give it speed in x
     this.background.autoScroll(-20, 0);
 
@@ -26,7 +26,7 @@ SpaceHipster.MainMenu.prototype = {
     //highest score
     text = "Highest score: "+this.highestScore;
     style = { font: "15px Arial", fill: "#fff", align: "center" };
-  
+
     var h = this.game.add.text(this.game.width/2, this.game.height/2 + 50, text, style);
     h.anchor.set(0.5);
   },
