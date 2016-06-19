@@ -10,14 +10,46 @@ var Hard = 150250;
 var astroidarray = [];
 var ARRAY_NUM_TOTAL = 1000;
 
+//next five lines necessary for ship movement and bullets:
+var sprite;
+var cursors;
+var bullet;
+var bullets;
+var bulletTime = 0;
+//endo ship and bullets stuff
+
+
 //title screen
 SpaceHipster.Game = function(){};
 
 SpaceHipster.Game.prototype = {
-  create: function() {
+ 
+    
+    create: function() {
 
   	//set world dimensions
     this.game.world.setBounds(0, 0, 1920, 1920);
+      
+    //added for ship and bullet
+    //  We need arcade physics
+    this.game.physics.startSystem(Phaser.Physics.ARCADE);
+    //  This will run in Canvas mode, so let's gain a little speed and display
+    this.game.renderer.clearBeforeRender = false;
+    this.game.renderer.roundPixels = true;
+    //  Our ships bullets
+    bullets = this.game.add.group();
+    bullets.enableBody = true;
+    bullets.physicsBodyType = Phaser.Physics.ARCADE;
+    //  All 40 of them
+    bullets.createMultiple(40, 'bullet');
+    bullets.setAll('anchor.x', 0.5);
+    bullets.setAll('anchor.y', 0.5);
+    //endo ship and bullet stuff 
+      
+    //added ship and bullet controls: game input
+    cursors = this.game.input.keyboard.createCursorKeys();
+    this.game.input.keyboard.addKeyCapture([ Phaser.Keyboard.SPACEBAR ]);
+    //endo ship and bullet stuff
 
     //background
     this.background = this.game.add.tileSprite(0, 0, this.game.world.width, this.game.world.height, 'space');
@@ -25,8 +57,15 @@ SpaceHipster.Game.prototype = {
     //create player
     this.player = this.game.add.sprite(this.game.world.centerX, this.game.world.centerY, 'playership');
     this.player.scale.setTo(2);
-    this.player.animations.add('fly', [0, 1, 2, 3], 5, true);
-    this.player.animations.play('fly');
+    this.player.anchor.set(0.5);
+    
+    //enable player physics
+    this.game.physics.arcade.enable(this.player);
+    this.player.body.drag.set(100);
+    this.player.body.maxVelocity.set(500);
+      
+    // this.playerSpeed = 120; (replaced by ship and bullet stuff)
+    this.player.body.collideWorldBounds = true; 
 
       //initializing the physics of asteroids
       this.asteroids = this.game.add.group();
@@ -36,10 +75,7 @@ SpaceHipster.Game.prototype = {
     //player initial score of zero
     this.playerScore = 0;
 
-    //enable player physics
-    this.game.physics.arcade.enable(this.player);
-    this.playerSpeed = 120;
-    this.player.body.collideWorldBounds = true;
+    
 
     //the camera will follow the player in the world
     this.game.camera.follow(this.player);
@@ -64,12 +100,48 @@ SpaceHipster.Game.prototype = {
     // every 10 secs process generateAsteroid
     this.game.time.events.loop(500, this.generateAsteriod, this);
   },
+    
+    
+    
+    
+    
+    
   update: function() {
-    if(this.game.input.activePointer.justPressed()) {
+    /*if(this.game.input.activePointer.justPressed()) {
 
       //move on the direction of the input
       this.game.physics.arcade.moveToPointer(this.player, this.playerSpeed);
+    }*/
+      
+if (cursors.up.isDown)
+    {
+        this.game.physics.arcade.accelerationFromRotation(this.player.rotation, 200, this.player.body.acceleration);
     }
+    else
+    {
+        this.player.body.acceleration.set(0);
+    }
+
+    if (cursors.left.isDown)
+    {
+        this.player.body.angularVelocity = -300;
+    }
+    else if (cursors.right.isDown)
+    {
+        this.player.body.angularVelocity = 300;
+    }
+    else
+    {
+        this.player.body.angularVelocity = 0;
+    }
+
+    
+ 
+      
+      
+      
+      
+      
 
     //collision between player and asteroids
     this.game.physics.arcade.collide(this.player, this.asteroids, this.hitAsteroid, null, this);
