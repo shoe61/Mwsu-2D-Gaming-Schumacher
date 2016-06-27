@@ -12,11 +12,13 @@ TopDownGame.Game.prototype = {
 
     //create layer
     this.backgroundlayer = this.map.createLayer('backgroundLayer');
+    this.perimeterlayer = this.map.createLayer('perimeterLayer')
     this.blockedLayer = this.map.createLayer('blockedLayer');
 
     //collision on blockedLayer
     this.map.setCollisionBetween(1, 2000, true, 'blockedLayer');
-
+    this.map.setCollisionBetween(1, 2000, true, 'perimeterLayer');
+      
     //resizes the game world to match the layer dimensions
     this.backgroundlayer.resizeWorld();
 
@@ -151,6 +153,7 @@ TopDownGame.Game.prototype = {
   update: function() {
     //collision
     this.game.physics.arcade.collide(this.player, this.blockedLayer);
+    this.game.physics.arcade.collide(this.player, this.perimeterlayer);
     this.game.physics.arcade.overlap(this.player, this.items, this.collect, null, this);
     this.game.physics.arcade.overlap(this.player, this.doors, this.enterDoor, null, this);
 
