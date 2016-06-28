@@ -31,20 +31,24 @@ TopDownGame.Game.prototype = {
     this.player = this.game.add.sprite(result[0].x, result[0].y, 'player');
     this.game.physics.arcade.enable(this.player);
       
-    //bullet
     
       
- 
+    //  Creates 10 bullets, using the 'bullet' graphic
+    weapon = this.game.add.weapon(10, 'bullets');
+      
+    //  The bullet will be automatically killed when it leaves the world bounds
+    weapon.bulletKillType = Phaser.Weapon.KILL_WORLD_BOUNDS;
+
+    //  The speed at which the bullet is fired
+    weapon.bulletSpeed = 400;
+      
+    //  Speed-up the rate of fire, allowing them to shoot 1 bullet every 60ms
+    weapon.fireRate = 460;
+      
+    //  Tell the Weapon to track the 'player' Sprite, offset by 14px horizontally, 0 vertically
+    weapon.trackSprite(this.player, 14, 0);
     
-    this.game.physics.startSystem(Phaser.Physics.ARCADE);
-    this.bullets = this.game.add.group();
-    this.game.physics.arcade.enable(this.bullets);
-    this.bullets.enableBody = true;
-    this.bullets.physicsBodyType = Phaser.Physics.ARCADE;
-    // All 10 of them- this means you run out of ammo if you don't tame your trigger finger
-    this.bullets.createMultiple(05, 'bullets');
-    this.bullets.setAll('anchor.x', 0.5);
-    this.bullets.setAll('anchor.y', 0.5);  
+   
       
       
 
@@ -199,35 +203,34 @@ TopDownGame.Game.prototype = {
     }
     else if(this.cursors.right.isDown) {
       this.player.body.velocity.x += 50;
+      
     }
       if (this.game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR))
     {
-        this.fireBullet();
+       if (this.cursors.up.isDown){
+           weapon.fireAngle = 270;
+           weapon.fire();
+       }
+        
+        if (this.cursors.down.isDown){
+           weapon.fireAngle = 90;
+           weapon.fire();
+       }
+       
+        if (this.cursors.right.isDown){
+           weapon.fireAngle = 0;
+           weapon.fire();
+       }
+       
+        if (this.cursors.left.isDown){
+           weapon.fireAngle = 180;
+           weapon.fire();
+       }
+       
     }
-      
   },
     
-    fireBullet: function(){
-        
-      if (this.game.time.now > bulletTime){
-        bullet = this.bullets.getFirstExists(false);
-      if (bullet){
-            // weapon report (in space, would you hear it?)
-            //this.fireSound.play();
-            // And fire the weapon
-            bullet.reset(this.player.body.x + 16, this.player.body.y + 5);
-            //bullet lifespan sets effective range of bullets; reduced it from 2000 to 550
-            bullet.lifespan = 650;
-           
-           
-           
-          
-          this.game.physics.arcade.velocityFromRotation(0, 400, bullet.body.velocity);
-        
-          bulletTime = this.game.time.now + 50;
-            }
-        }
-    },
+   
     
   
     collect: function(player, collectable) {
