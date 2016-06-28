@@ -2,7 +2,7 @@ var TopDownGame = TopDownGame || {};
 
 //title screen
 TopDownGame.Game = function(){};
-
+var bulletTime = 0;
 TopDownGame.Game.prototype = {
   create: function() {
     this.map = this.game.add.tilemap('level1');
@@ -22,19 +22,41 @@ TopDownGame.Game.prototype = {
     //resizes the game world to match the layer dimensions
     this.backgroundlayer.resizeWorld();
 
-    this.createItems();
-    this.createDoors();    
+    //unused
+    //this.createItems();
+    //this.createDoors();    
 
     //create player
     var result = this.findObjectsByType('playerStart', this.map, 'objectsLayer')
     this.player = this.game.add.sprite(result[0].x, result[0].y, 'player');
     this.game.physics.arcade.enable(this.player);
+      
+    //bullet
+    
+      
+ 
+    
+    this.game.physics.startSystem(Phaser.Physics.ARCADE);
+    this.bullets = this.game.add.group();
+    this.game.physics.arcade.enable(this.bullets);
+    this.bullets.enableBody = true;
+    this.bullets.physicsBodyType = Phaser.Physics.ARCADE;
+    // All 10 of them- this means you run out of ammo if you don't tame your trigger finger
+    this.bullets.createMultiple(05, 'bullets');
+    this.bullets.setAll('anchor.x', 0.5);
+    this.bullets.setAll('anchor.y', 0.5);  
+      
+      
 
     //the camera will follow the player in the world
     this.game.camera.follow(this.player);
 
     //move player with cursor keys
     this.cursors = this.game.input.keyboard.createCursorKeys();
+    
+    //fire bullets with spacebar
+    this.game.input.keyboard.addKeyCapture([ Phaser.Keyboard.SPACEBAR ]);
+      
 	this.map.removeTile(1,1, 1);
 	this.carveMaze(1,1);
 	this.rooms = this.game.rnd.integerInRange(10, 30);
@@ -178,8 +200,37 @@ TopDownGame.Game.prototype = {
     else if(this.cursors.right.isDown) {
       this.player.body.velocity.x += 50;
     }
+      if (this.game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR))
+    {
+        this.fireBullet();
+    }
+      
   },
-  collect: function(player, collectable) {
+    
+    fireBullet: function(){
+        
+      if (this.game.time.now > bulletTime){
+        bullet = this.bullets.getFirstExists(false);
+      if (bullet){
+            // weapon report (in space, would you hear it?)
+            //this.fireSound.play();
+            // And fire the weapon
+            bullet.reset(this.player.body.x + 16, this.player.body.y + 5);
+            //bullet lifespan sets effective range of bullets; reduced it from 2000 to 550
+            bullet.lifespan = 650;
+           
+           
+           
+          
+          this.game.physics.arcade.velocityFromRotation(0, 400, bullet.body.velocity);
+        
+          bulletTime = this.game.time.now + 50;
+            }
+        }
+    },
+    
+  
+    collect: function(player, collectable) {
     console.log('yummy!');
 
     //remove sprite
