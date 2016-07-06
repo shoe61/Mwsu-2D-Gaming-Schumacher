@@ -124,9 +124,9 @@ var playState = {
 
             //Create new enemy instance
             this.enemy = new player(id, game, eurecaProxy);
-            this.enemy.state.tint = this.enemy.state.tint;
+            this.enemy.sprite.tint = enemy_state.tint;
             //console.log(this.enemy_state);
-
+            
             globals.playerList[id] = this.enemy;
             
             console.log('player list: ',globals.playerList);
@@ -205,7 +205,7 @@ player = function (index, game, proxyServer) {
     this.sprite.tint = this.tint;
     this.sprite.id = index;
     this.state.alive = true;
-    this.state.tint = 0;
+    this.state.tint = this.tint;
     this.startTime = this.game.time.time;
     console.log(this.game.time.time);
     this.old_x = this.x;
